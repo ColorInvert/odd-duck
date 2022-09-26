@@ -8,6 +8,7 @@ let productArray = [];
 
 //dom manipulation
 let imgContainer = document.getElementById('img-container');
+console.log(imgContainer);
 let imgOne = document.getElementById('img-one');
 let imgTwo = document.getElementById('img-two');
 let imgThree = document.getElementById('img-three');
@@ -30,7 +31,9 @@ function Product(name, fileExtension = 'jpg') {
 //functions
 
 function randomIndex() {
-  Math.floor(Math.random() * productArray.length);
+  let randomVal = Math.floor(Math.random() * productArray.length);
+  console.log(randomVal);
+  return randomVal;
 }
 
 function renderImgs() {
@@ -43,9 +46,10 @@ function renderImgs() {
     imgTwoIndex = randomIndex();
     imgThreeIndex = randomIndex();
   }
-  imgOne.src = productArray[0].img;
-  imgTwo.src = productArray[1].img;
-  imgThree.src = productArray[2].img;
+
+  imgOne.src = productArray[imgOneIndex].img;
+  imgTwo.src = productArray[imgTwoIndex].img;
+  imgThree.src = productArray[imgThreeIndex].img;
 
 
   productArray[imgOneIndex].views++;
@@ -87,19 +91,19 @@ function handleClick(event) {
 
 
 function handleShowResults() {
-
+  console.log('You clicked the results button!');
   if (voteCount === 0) {
-    for (let i = 0; i < productArray.length; i++); {
+    for (let i = 0; i < productArray.length; i++) {
       let liElem = document.createElement('li');
 
-      liElem.textContent `${productArray[i].name} was viewed ${productArray[i].views} times, and clicked ${productArray[i].clicks} times.`;
-      
+      liElem.textContent = `${productArray[i].name} was viewed ${productArray[i].views} times, and clicked ${productArray[i].clicks} times.`;
+
       resultsContainer.appendChild(liElem);
     }
 
   }
 }
-
+resultsBtn.addEventListener('click', handleShowResults);
 //Executable code
 
 
@@ -120,7 +124,7 @@ new Product('pen');
 new Product('pet-sweep');
 new Product('scissors');
 new Product('shark');
-new Product('sweep');
+new Product('sweep', 'png');
 new Product('tauntaun');
 new Product('unicorn');
 new Product('water-can');
