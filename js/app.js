@@ -27,27 +27,81 @@ function Product(name, fileExtension = 'jpg') {
 }
 
 
-//Utilities
+//functions
 
-function randomIndex(){
+function randomIndex() {
   Math.floor(Math.random() * productArray.length);
 }
 
-function renderImgs(){
+function renderImgs() {
   let imgOneIndex = randomIndex();
   let imgTwoIndex = randomIndex();
   let imgThreeIndex = randomIndex();
+
+  while (imgOneIndex === imgTwoIndex || imgOneIndex === imgThreeIndex || imgTwoIndex === imgThreeIndex) {
+    imgOneIndex = randomIndex();
+    imgTwoIndex = randomIndex();
+    imgThreeIndex = randomIndex();
+  }
   imgOne.src = productArray[0].img;
   imgTwo.src = productArray[1].img;
   imgThree.src = productArray[2].img;
+
+
+  productArray[imgOneIndex].views++;
+  productArray[imgTwoIndex].views++;
+  productArray[imgThreeIndex].views++;
+
+  imgOne.alt = productArray[imgOneIndex].name;
+  imgTwo.alt = productArray[imgTwoIndex].name;
+  imgThree.alt = productArray[imgThreeIndex].name;
 }
+
+imgContainer.addEventListener('click', handleClick);
 
 //Event handlers
 
+function handleClick(event) {
+  console.dir(event.target);
+  let imgClicked = event.target.alt;
+
+
+  for (let i = 0; i < productArray.length; i++) {
+
+    if (productArray[i].name === imgClicked) {
+      productArray[i].clicks++;
+    }
+
+  }
+
+  voteCount--;
+
+  renderImgs();
+  if (voteCount === 0) {
+    imgContainer.removeEventListener('click', handleClick);
+
+  }
+
+
+}
+
+
+function handleShowResults() {
+
+  if (voteCount === 0) {
+    for (let i = 0; i < productArray.length; i++); {
+      let liElem = document.createElement('li');
+
+      liElem.textContent `${productArray[i].name} was viewed ${productArray[i].views} times, and clicked ${productArray[i].clicks} times.`;
+      
+      resultsContainer.appendChild(liElem);
+    }
+
+  }
+}
 
 //Executable code
 
-renderImgs();
 
 
 
@@ -71,3 +125,9 @@ new Product('tauntaun');
 new Product('unicorn');
 new Product('water-can');
 new Product('wine-glass');
+
+
+renderImgs();
+
+imgContainer.addEventListener('click', handleClick);
+resultsBtn.addEventListener('click', handleShowResults);
