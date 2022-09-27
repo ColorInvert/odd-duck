@@ -112,6 +112,7 @@ imgContainer.addEventListener('click', handleClick);
 
 function handleClick(event) {
   console.dir(event.target);
+
   let imgClicked = event.target.alt;
 
 
