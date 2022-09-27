@@ -5,17 +5,16 @@
 let voteCount = 25;
 let productArray = [];
 let productNamesArray = [];
-
+let imgQueueArray = [];
 
 //dom manipulation
 let imgContainer = document.getElementById('img-container');
-console.log(imgContainer);
 let imgOne = document.getElementById('img-one');
 let imgTwo = document.getElementById('img-two');
 let imgThree = document.getElementById('img-three');
 
-let resultsBtn = document.getElementById('show-results-btn');
-let resultsContainer = document.getElementById('results-container');
+// let resultsBtn = document.getElementById('show-results-btn');
+// let resultsContainer = document.getElementById('results-container');
 
 //constructor function
 
@@ -34,34 +33,78 @@ function Product(name, fileExtension = 'jpg') {
 
 function randomIndex() {
   let randomVal = Math.floor(Math.random() * productArray.length);
-  console.log(randomVal);
   return randomVal;
 }
 
+
+
+//TODO Create new renderImgs() that doesn't duplicate images from previous offering.
+
+
 function renderImgs() {
-  let imgOneIndex = randomIndex();
-  let imgTwoIndex = randomIndex();
-  let imgThreeIndex = randomIndex();
 
-  while (imgOneIndex === imgTwoIndex || imgOneIndex === imgThreeIndex || imgTwoIndex === imgThreeIndex) {
-    imgOneIndex = randomIndex();
-    imgTwoIndex = randomIndex();
-    imgThreeIndex = randomIndex();
+
+  //does our imgQueue contain 6 index values? if not, push in more until it does, while checking each to make sure that the pushed number doesn't match any existing.
+  while (imgQueueArray.length < 6) {
+
+    let randomNum = randomIndex();
+    if (!imgQueueArray.includes(randomNum)) {
+      imgQueueArray.push(randomNum);
+    }
   }
+  console.log(imgQueueArray);
+  //Put the current first 3 items in our queue into the 3 image index sockets
+  let imgOneIndex = imgQueueArray[0];
+  let imgTwoIndex = imgQueueArray[1];
+  let imgThreeIndex = imgQueueArray[2];
 
+  //load the image sources from our image names, using the index vars we've got.
   imgOne.src = productArray[imgOneIndex].img;
   imgTwo.src = productArray[imgTwoIndex].img;
   imgThree.src = productArray[imgThreeIndex].img;
+  imgOne.alt = productArray[imgOneIndex].name;
+  imgTwo.alt = productArray[imgTwoIndex].name;
+  imgThree.alt = productArray[imgThreeIndex].name;
 
-
+  //Increment each of the views counts on our 3 displayed items
   productArray[imgOneIndex].views++;
   productArray[imgTwoIndex].views++;
   productArray[imgThreeIndex].views++;
 
-  imgOne.alt = productArray[imgOneIndex].name;
-  imgTwo.alt = productArray[imgTwoIndex].name;
-  imgThree.alt = productArray[imgThreeIndex].name;
+  //Now that our front 3 indexes have been used, destroy them, and move the queue forward.
+  imgQueueArray.shift();
+  imgQueueArray.shift();
+  imgQueueArray.shift();
+  console.log(imgQueueArray);
+
 }
+
+// function renderImgs() {
+//   let imgOneIndex = randomIndex();
+//   let imgTwoIndex = randomIndex();
+//   let imgThreeIndex = randomIndex();
+
+//   while (imgOneIndex === imgTwoIndex || imgOneIndex === imgThreeIndex || imgTwoIndex === imgThreeIndex) {
+//     imgOneIndex = randomIndex();
+//     imgTwoIndex = randomIndex();
+//     imgThreeIndex = randomIndex();
+//   }
+
+//   imgOne.src = productArray[imgOneIndex].img;
+//   imgTwo.src = productArray[imgTwoIndex].img;
+//   imgThree.src = productArray[imgThreeIndex].img;
+
+
+//   productArray[imgOneIndex].views++;
+//   productArray[imgTwoIndex].views++;
+//   productArray[imgThreeIndex].views++;
+
+//   imgOne.alt = productArray[imgOneIndex].name;
+//   imgTwo.alt = productArray[imgTwoIndex].name;
+//   imgThree.alt = productArray[imgThreeIndex].name;
+// }
+
+
 
 imgContainer.addEventListener('click', handleClick);
 
@@ -81,7 +124,7 @@ function handleClick(event) {
   }
 
   voteCount--;
-  
+
   //after we run out of vote count, render chart, and remove event listeners for images.
   renderImgs();
   if (voteCount === 0) {
@@ -147,9 +190,13 @@ imgContainer.addEventListener('click', handleClick);
 //! CHARTJS LIBRARY RELATED CODE BELOW.
 function renderChart() {
 
-  // TODO To be run only when out of votes. get all click and view data, and parse them into arrays alongside our already made name array.
-
-
+  // To be run only when out of votes. get all click and view data, and parse them into arrays alongside our already made name array.
+  let viewsArray = [];
+  let clicksArray = [];
+  for (let i = 0; i < productArray.length; i++) {
+    viewsArray.push(productArray[i].views);
+    clicksArray.push(productArray[i].clicks);
+  }
 
 
 
@@ -159,25 +206,14 @@ function renderChart() {
     data: {
       labels: productNamesArray,
       datasets: [{
-        label: '# of Votes',
-        data: [12, 19, 3, 5, 2, 3],
-        backgroundColor: [
-          'rgba(255, 99, 132, 0.2)',
-          'rgba(54, 162, 235, 0.2)',
-          'rgba(255, 206, 86, 0.2)',
-          'rgba(75, 192, 192, 0.2)',
-          'rgba(153, 102, 255, 0.2)',
-          'rgba(255, 159, 64, 0.2)'
-        ],
-        borderColor: [
-          'rgba(255, 99, 132, 1)',
-          'rgba(54, 162, 235, 1)',
-          'rgba(255, 206, 86, 1)',
-          'rgba(75, 192, 192, 1)',
-          'rgba(153, 102, 255, 1)',
-          'rgba(255, 159, 64, 1)'
-        ],
-        borderWidth: 1
+        label: '# of views',
+        data: viewsArray,
+        backgroundColor: ['red'],
+      },
+      {
+        label: '# of clicks',
+        data: clicksArray,
+        backgroundColor: ['green'],
       }]
     },
     options: {
