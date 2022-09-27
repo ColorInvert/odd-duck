@@ -53,7 +53,7 @@
 
 .grid-item5 {
   grid-area: footer;
-  background-color: rgb(143, 143, 143);
+  background-color: rgb(212, 0, 255);
   font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
 }
 
@@ -95,4 +95,8 @@ h1 {
 font-weight: 900;
 text-align: center;
 padding: 1%;
+}
+
+#chartZone{
+  width: 80%;
 }

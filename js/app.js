@@ -4,6 +4,7 @@
 // global vars
 let voteCount = 25;
 let productArray = [];
+let productNamesArray = [];
 
 
 //dom manipulation
@@ -25,6 +26,7 @@ function Product(name, fileExtension = 'jpg') {
   this.clicks = 0;
 
   productArray.push(this);
+  productNamesArray.push(this.name);
 }
 
 
@@ -79,9 +81,11 @@ function handleClick(event) {
   }
 
   voteCount--;
-
+  
+  //after we run out of vote count, render chart, and remove event listeners for images.
   renderImgs();
   if (voteCount === 0) {
+    renderChart();
     imgContainer.removeEventListener('click', handleClick);
 
   }
@@ -89,21 +93,21 @@ function handleClick(event) {
 
 }
 
+// ?Former view results button.
+// function handleShowResults() {
+//   console.log('You clicked the results button!');
+//   if (voteCount === 0) {
+//     for (let i = 0; i < productArray.length; i++) {
+//       let liElem = document.createElement('li');
 
-function handleShowResults() {
-  console.log('You clicked the results button!');
-  if (voteCount === 0) {
-    for (let i = 0; i < productArray.length; i++) {
-      let liElem = document.createElement('li');
+//       liElem.textContent = `${productArray[i].name} was viewed ${productArray[i].views} times, and clicked ${productArray[i].clicks} times.`;
 
-      liElem.textContent = `${productArray[i].name} was viewed ${productArray[i].views} times, and clicked ${productArray[i].clicks} times.`;
+//       resultsContainer.appendChild(liElem);
+//     }
 
-      resultsContainer.appendChild(liElem);
-    }
-
-  }
-}
-resultsBtn.addEventListener('click', handleShowResults);
+//   }
+// }
+// resultsBtn.addEventListener('click', handleShowResults);
 //Executable code
 
 
@@ -134,4 +138,59 @@ new Product('wine-glass');
 renderImgs();
 
 imgContainer.addEventListener('click', handleClick);
-resultsBtn.addEventListener('click', handleShowResults);
+//?more commented out results button
+//resultsBtn.addEventListener('click', handleShowResults);
+
+
+
+
+//! CHARTJS LIBRARY RELATED CODE BELOW.
+function renderChart() {
+
+  // TODO To be run only when out of votes. get all click and view data, and parse them into arrays alongside our already made name array.
+
+
+
+
+
+  //Define the chart, and provide all of it's data as established above
+  let chartObj = {
+    type: 'bar',
+    data: {
+      labels: productNamesArray,
+      datasets: [{
+        label: '# of Votes',
+        data: [12, 19, 3, 5, 2, 3],
+        backgroundColor: [
+          'rgba(255, 99, 132, 0.2)',
+          'rgba(54, 162, 235, 0.2)',
+          'rgba(255, 206, 86, 0.2)',
+          'rgba(75, 192, 192, 0.2)',
+          'rgba(153, 102, 255, 0.2)',
+          'rgba(255, 159, 64, 0.2)'
+        ],
+        borderColor: [
+          'rgba(255, 99, 132, 1)',
+          'rgba(54, 162, 235, 1)',
+          'rgba(255, 206, 86, 1)',
+          'rgba(75, 192, 192, 1)',
+          'rgba(153, 102, 255, 1)',
+          'rgba(255, 159, 64, 1)'
+        ],
+        borderWidth: 1
+      }]
+    },
+    options: {
+      scales: {
+        y: {
+          beginAtZero: true
+        }
+      }
+    }
+  };
+
+
+  //Finally, render the chart to the HTML.
+  const ctx = document.getElementById('myChart').getContext('2d');
+  new Chart(ctx, chartObj);
+}
