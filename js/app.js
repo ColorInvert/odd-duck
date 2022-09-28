@@ -4,7 +4,7 @@
 // global vars
 let voteCount = 25;
 let productArray = [];
-let productNamesArray = [];
+
 let imgQueueArray = [];
 
 //dom manipulation
@@ -25,7 +25,6 @@ function Product(name, fileExtension = 'jpg') {
   this.clicks = 0;
 
   productArray.push(this);
-  productNamesArray.push(this.name);
 }
 
 
@@ -132,6 +131,14 @@ function handleClick(event) {
     renderChart();
     imgContainer.removeEventListener('click', handleClick);
 
+
+
+
+    //**!CREATE LOCAL STORAGE **/
+    let stringifiedProductArray = JSON.stringify(productArray);
+    console.log('stringified product data >>>', stringifiedProductArray);
+    localStorage.setItem('myProducts', stringifiedProductArray);
+
   }
 
 
@@ -152,32 +159,50 @@ function handleClick(event) {
 //   }
 // }
 // resultsBtn.addEventListener('click', handleShowResults);
+
+
+
+
+//**!LOCAL STORAGE CODE **/
+let savedProductArray = localStorage.getItem('myProducts');
+console.log('THIS WAS GRABBED FROM THE VOID', savedProductArray);
+
+let parsedProductArray = JSON.parse(savedProductArray);
+
 //Executable code
 
 
 
 
 //Object creation
-new Product('bag');
-new Product('banana');
-new Product('bathroom');
-new Product('boots');
-new Product('breakfast');
-new Product('bubblegum');
-new Product('chair');
-new Product('cthulhu');
-new Product('dog-duck');
-new Product('dragon');
-new Product('pen');
-new Product('pet-sweep');
-new Product('scissors');
-new Product('shark');
-new Product('sweep', 'png');
-new Product('tauntaun');
-new Product('unicorn');
-new Product('water-can');
-new Product('wine-glass');
 
+if (savedProductArray) {
+  productArray = parsedProductArray;
+  console.log('RETURNING USER, RETRIEVED PREVIOUS LOCAL STORAGE.');
+}
+
+else {
+  console.log('NEWUSER DETECTED, NO LOCAL STORAGE FOUND');
+  new Product('bag');
+  new Product('banana');
+  new Product('bathroom');
+  new Product('boots');
+  new Product('breakfast');
+  new Product('bubblegum');
+  new Product('chair');
+  new Product('cthulhu');
+  new Product('dog-duck');
+  new Product('dragon');
+  new Product('pen');
+  new Product('pet-sweep');
+  new Product('scissors');
+  new Product('shark');
+  new Product('sweep', 'png');
+  new Product('tauntaun');
+  new Product('unicorn');
+  new Product('water-can');
+  new Product('wine-glass');
+}
 
 renderImgs();
 
@@ -191,12 +216,14 @@ imgContainer.addEventListener('click', handleClick);
 //! CHARTJS LIBRARY RELATED CODE BELOW.
 function renderChart() {
 
-  // To be run only when out of votes. get all click and view data, and parse them into arrays alongside our already made name array.
+  // To be run only when out of votes. get all click, view, and name data.
   let viewsArray = [];
   let clicksArray = [];
+  let namesArray = [];
   for (let i = 0; i < productArray.length; i++) {
     viewsArray.push(productArray[i].views);
     clicksArray.push(productArray[i].clicks);
+    namesArray.push(productArray[i].name);
   }
 
 
@@ -205,7 +232,7 @@ function renderChart() {
   let chartObj = {
     type: 'bar',
     data: {
-      labels: productNamesArray,
+      labels: namesArray,
       datasets: [{
         label: '# of views',
         data: viewsArray,
