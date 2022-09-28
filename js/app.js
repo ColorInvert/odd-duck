@@ -1,23 +1,18 @@
 'use strict';
 
 
-// global vars
+//********************GLOBAL VARIABLES********************
 let voteCount = 25;
 let productArray = [];
-
 let imgQueueArray = [];
 
-//dom manipulation
+//********************DOM MANIPULATION********************
 let imgContainer = document.getElementById('img-container');
 let imgOne = document.getElementById('img-one');
 let imgTwo = document.getElementById('img-two');
 let imgThree = document.getElementById('img-three');
 
-// let resultsBtn = document.getElementById('show-results-btn');
-// let resultsContainer = document.getElementById('results-container');
-
-//constructor function
-
+//***********************CONSTRUCTOR**********************
 function Product(name, fileExtension = 'jpg') {
   this.name = name;
   this.img = `img/${name}.${fileExtension}`;
@@ -27,23 +22,17 @@ function Product(name, fileExtension = 'jpg') {
   productArray.push(this);
 }
 
-
-//functions
-
+//***********************FUNCTIONS************************
+//Called whenever we need a random entry in the product array.
 function randomIndex() {
   let randomVal = Math.floor(Math.random() * productArray.length);
   return randomVal;
 }
-
-
-
-//TODO Create new renderImgs() that doesn't duplicate images from previous offering.
-
-
+//Called whenever we need to render 3 more images for our product review.
 function renderImgs() {
 
 
-  //does our imgQueue contain 6 index values? if not, push in more until it does, while checking each to make sure that the pushed number doesn't match any existing.
+  //Does our imgQueue contain 6 index values? if not, push in more until it does, while checking each to make sure that the pushed number doesn't match any existing.
   while (imgQueueArray.length < 6) {
 
     let randomNum = randomIndex();
@@ -57,7 +46,7 @@ function renderImgs() {
   let imgTwoIndex = imgQueueArray[1];
   let imgThreeIndex = imgQueueArray[2];
 
-  //load the image sources from our image names, using the index vars we've got.
+  //Load the image sources from our image names, using the index vars we've got.
   imgOne.src = productArray[imgOneIndex].img;
   imgTwo.src = productArray[imgTwoIndex].img;
   imgThree.src = productArray[imgThreeIndex].img;
@@ -78,37 +67,13 @@ function renderImgs() {
 
 }
 
-// function renderImgs() {
-//   let imgOneIndex = randomIndex();
-//   let imgTwoIndex = randomIndex();
-//   let imgThreeIndex = randomIndex();
-
-//   while (imgOneIndex === imgTwoIndex || imgOneIndex === imgThreeIndex || imgTwoIndex === imgThreeIndex) {
-//     imgOneIndex = randomIndex();
-//     imgTwoIndex = randomIndex();
-//     imgThreeIndex = randomIndex();
-//   }
-
-//   imgOne.src = productArray[imgOneIndex].img;
-//   imgTwo.src = productArray[imgTwoIndex].img;
-//   imgThree.src = productArray[imgThreeIndex].img;
-
-
-//   productArray[imgOneIndex].views++;
-//   productArray[imgTwoIndex].views++;
-//   productArray[imgThreeIndex].views++;
-
-//   imgOne.alt = productArray[imgOneIndex].name;
-//   imgTwo.alt = productArray[imgTwoIndex].name;
-//   imgThree.alt = productArray[imgThreeIndex].name;
-// }
-
-
-
+//********************EVENT LISTENERS*********************
+//Listen for clicks on one of our three images.
 imgContainer.addEventListener('click', handleClick);
 
-//Event handlers
 
+//********************EVENT HANDLERS**********************
+//To be run every time a click on an image occurs.
 function handleClick(event) {
   console.dir(event.target);
 
@@ -125,18 +90,15 @@ function handleClick(event) {
 
   voteCount--;
 
-  //after we run out of vote count, render chart, and remove event listeners for images.
+  //after we run out of vote count, render our chart, and remove event listeners for images.
   renderImgs();
   if (voteCount === 0) {
     renderChart();
     imgContainer.removeEventListener('click', handleClick);
 
-
-
-
     //**!CREATE LOCAL STORAGE **/
+    //Now that voting is concluded, JSON stringify the product array, and save to a local storage cookie.
     let stringifiedProductArray = JSON.stringify(productArray);
-    console.log('stringified product data >>>', stringifiedProductArray);
     localStorage.setItem('myProducts', stringifiedProductArray);
 
   }
@@ -144,45 +106,21 @@ function handleClick(event) {
 
 }
 
-// ?Former view results button.
-// function handleShowResults() {
-//   console.log('You clicked the results button!');
-//   if (voteCount === 0) {
-//     for (let i = 0; i < productArray.length; i++) {
-//       let liElem = document.createElement('li');
-
-//       liElem.textContent = `${productArray[i].name} was viewed ${productArray[i].views} times, and clicked ${productArray[i].clicks} times.`;
-
-//       resultsContainer.appendChild(liElem);
-//     }
-
-//   }
-// }
-// resultsBtn.addEventListener('click', handleShowResults);
 
 
 
-
-//**!LOCAL STORAGE CODE **/
+//!LOCAL STORAGE CODE
+//Retrieve and parse the local storage data.
 let savedProductArray = localStorage.getItem('myProducts');
-console.log('THIS WAS GRABBED FROM THE VOID', savedProductArray);
-
 let parsedProductArray = JSON.parse(savedProductArray);
 
-//Executable code
 
-
-
-
-//Object creation
-
+//Check if we have a savedProductArray local storage cookie. If we do, load it...
 if (savedProductArray) {
   productArray = parsedProductArray;
-  console.log('RETURNING USER, RETRIEVED PREVIOUS LOCAL STORAGE.');
 }
-
+//If not, make one.
 else {
-  console.log('NEWUSER DETECTED, NO LOCAL STORAGE FOUND');
   new Product('bag');
   new Product('banana');
   new Product('bathroom');
@@ -204,11 +142,9 @@ else {
   new Product('wine-glass');
 }
 
+//Now that we've defined and linked the url directory for our product-objects, render them, and prepare them for click handling.
 renderImgs();
-
 imgContainer.addEventListener('click', handleClick);
-//?more commented out results button
-//resultsBtn.addEventListener('click', handleShowResults);
 
 
 
@@ -216,7 +152,7 @@ imgContainer.addEventListener('click', handleClick);
 //! CHARTJS LIBRARY RELATED CODE BELOW.
 function renderChart() {
 
-  // To be run only when out of votes. get all click, view, and name data.
+  // To be run only when out of votes. get all click, view, and name data, in preparation to...
   let viewsArray = [];
   let clicksArray = [];
   let namesArray = [];
@@ -228,7 +164,7 @@ function renderChart() {
 
 
 
-  //Define the chart, and provide all of it's data as established above
+  //...Define the chart, and provide all of it's data as established above.
   let chartObj = {
     type: 'bar',
     data: {
